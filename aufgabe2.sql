@@ -46,13 +46,37 @@ SELECT kunde.nr,
 FROM auftrag
   JOIN kunde ON auftrag.kundnr = kunde.nr
   JOIN personal ON auftrag.persnr = personal.persnr;
-SELECT * FROM (
-
--- kinda sus
 SELECT kunde.name,
-  COUNT(auftrag.auftrnr) as anzahl
+  COUNT(auftrag) as auftraege
 FROM kunde
   JOIN auftrag ON auftrag.kundnr = kunde.nr
+GROUP BY kunde.name
+ORDER BY auftraege desc
+LIMIT 1;
+WITH gesamt_auftraege AS (
+  SELECT kunde.name,
+    COUNT (auftrag) AS auftrag_summe,
+    SUM(auftragsposten.gesamtpreis) AS umsatz
+  FROM kunde
+    JOIN auftrag ON auftrag.kundnr = kunde.nr
+    JOIN auftragsposten ON auftragsposten.auftrnr = auftrag.auftrnr
   GROUP BY kunde.name
-  HAVING anzahl= MAX(anzahl)
-) 
+)
+SELECT *
+FROM gesamt_auftraege
+WHERE (
+    umsatz = (
+      SELECT MAX(umsatz)
+      FROM gesamt_auftraege
+    )
+  );
+CREATE VIEW KundenUmsatz AS
+SELECT kunde.name,
+  SUM(auftragsposten.gesamtpreis) AS summe
+FROM kunde
+  JOIN auftrag ON auftrag.kundnr = kunde.nr
+  JOIN auftragsposten ON auftragsposten.auftrnr = auftrag.auftrnr
+GROUP BY kunde.name;
+SELECT *
+FROM KundenUmsatz;
+DROP VIEW KundenUmsatz;

@@ -31,7 +31,8 @@ SELECT kundnr,
   MIN(datum) AS von,
   MAX(datum) AS bis
 FROM auftrag
-GROUP BY kundnr;
+GROUP BY kundnr
+ORDER BY kundnr ASC;
 SELECT kundnr,
   COUNT(*) AS anzahl,
   MIN(datum) AS von,

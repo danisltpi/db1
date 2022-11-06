@@ -42,17 +42,22 @@ GROUP BY kundnr
 HAVING COUNT(*) = 1;
 SELECT kunde.nr,
   kunde.name,
+  auftrag.auftrnr AS auftrag
+FROM auftrag
+  JOIN kunde ON auftrag.kundnr = kunde.nr;
+SELECT kunde.nr,
+  kunde.name,
   auftrag.auftrnr AS auftrag,
-  personal.name
+  personal.name AS mitarbeiter
 FROM auftrag
   JOIN kunde ON auftrag.kundnr = kunde.nr
   JOIN personal ON auftrag.persnr = personal.persnr;
 SELECT kunde.name,
-  COUNT(auftrag) as auftraege
+  COUNT(auftrag) AS auftraege
 FROM kunde
   JOIN auftrag ON auftrag.kundnr = kunde.nr
 GROUP BY kunde.name
-ORDER BY auftraege desc
+ORDER BY auftraege DESC
 LIMIT 1;
 WITH gesamt_auftraege AS (
   SELECT kunde.name,
